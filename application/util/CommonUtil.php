@@ -12,12 +12,13 @@ namespace app\util;
 
 use app\enum\ScopeEnum;
 use app\exception\CustomException;
+use think\Request;
 
 class CommonUtil {
 
 	public static function checkAuth() {
 
-		$token = $_REQUEST['token'];
+		$token = Request::instance() ->header("token");
 		if (empty($token)) {
 			throw new CustomException(ScopeEnum::AUTHORIZED_ERROR);
 		}

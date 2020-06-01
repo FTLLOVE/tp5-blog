@@ -42,7 +42,7 @@ class ArticleController {
 		$tagIds = $request->param("tagIds/a");
 
 		Db::transaction(function () use ($tagIds, $categoryIds, $content, $title) {
-			$originArticle = ArticleModel::findOne($title);
+			$originArticle = ArticleModel::getByTitle($title);
 			if (!empty($originArticle)) {
 				throw new CustomException(ScopeEnum::ARTICLE_EXIST);
 			}
@@ -51,13 +51,25 @@ class ArticleController {
 			$articleId = ArticleModel::insertOne($title, $content);
 
 			// 文章-分类
+			$originCategoryIds = array();
+			$articleCategory = new ArticleCategoryModel();
 			foreach ($categoryIds as $categoryId) {
-				ArticleCategoryModel::insertOne($articleId, $categoryId);
+				array_push($originCategoryIds, [
+					"article_id" => $articleId,
+					"category_id" => $categoryId
+				]);
 			}
-			// 文章标签
+			$articleCategory->saveAll($originCategoryIds);
+			// 文章-标签
+			$originTagIds = array();
+			$articleTag = new ArticleTagModel();
 			foreach ($tagIds as $tagId) {
-				ArticleTagModel::insertOne($articleId, $tagId);
+				array_push($originTagIds, [
+					"article_id" => $articleId,
+					"tag_id" => $tagId
+				]);
 			}
+			$articleTag->saveAll($originTagIds);
 
 		});
 		return ResponseData::Success();
@@ -81,6 +93,18 @@ class ArticleController {
 		return ResponseData::Success($data);
 	}
 
+	public function findArticleListForAdmin(Request $request) {
+		$keyword = $request->param("keyword");
+		$page = $request->param("page");
+		$size = $request->param("size");
+		$data = ArticleModel::findAllForAdmin($keyword, $page, $size);
+		if (empty($data->items())) {
+			throw new CustomException(ScopeEnum::LIST_EMPTY);
+		}
+		return ResponseData::Success($data);
+
+	}
+
 
 	/**
 	 * 获取文章详情
@@ -98,6 +122,13 @@ class ArticleController {
 		return ResponseData::Success($data);
 	}
 
+	/**
+	 * 更新文章和标题
+	 *
+	 *
+	 * @param Request $request
+	 * @return array
+	 */
 	public function updateArticle(Request $request) {
 
 		(new IdValidate())->goCheck();
@@ -122,7 +153,7 @@ class ArticleController {
 
 		Db::transaction(function () use ($tagIds, $categoryIds, $content, $title, $id, $status, $originArticle) {
 
-			$originArticle = ArticleModel::where("title", $title)->find();
+			$originArticle = ArticleModel::getByTitle($title);
 
 			if ($originArticle && $id != $originArticle->id) {
 				throw new CustomException(ScopeEnum::ARTICLE_EXIST);
@@ -134,19 +165,31 @@ class ArticleController {
 			// 文章-分类
 			ArticleCategoryModel::where("article_id", "=", $articleId)->delete();
 
+			$originCategoryIds = array();
+			$articleCategory = new ArticleCategoryModel();
 			foreach ($categoryIds as $categoryId) {
-				ArticleCategoryModel::insertOne($articleId, $categoryId);
+				array_push($originCategoryIds, [
+					"article_id" => $articleId,
+					"category_id" => $categoryId
+				]);
 			}
+			$articleCategory->saveAll($originCategoryIds);
 
-			// 文章标签
+			// 文章-标签
 			ArticleTagModel::where("article_id", "=", $articleId)->delete();
 
+			$originTagIds = array();
+			$articleTag = new ArticleTagModel();
 			foreach ($tagIds as $tagId) {
-				ArticleTagModel::insertOne($articleId, $tagId);
+				array_push($originTagIds, [
+					"article_id" => $articleId,
+					"tag_id" => $tagId
+				]);
 			}
+			$articleTag->saveAll($originTagIds);
 
 		});
 		return ResponseData::Success();
-
 	}
+
 }

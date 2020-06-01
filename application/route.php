@@ -12,40 +12,49 @@
 
 use think\Route;
 
-// 登录
-Route::post("api/loginByUnameAndPwd", "api/LoginController/loginByUnameAndPwd");
+Route::group("api/front", function () {
 
-// 注册
-Route::post("api/registerUser", "api/UserController/registerUser");
+	// 登录
+	Route::post("loginByUnameAndPwd", "api/LoginController/loginByUnameAndPwd");
 
-// 获取用户详情
-Route::get("api/getDetail", "api/UserController/getDetail");
+	// 注册
+	Route::post("registerUser", "api/UserController/registerUser");
 
-// 修改用户名密码
-Route::post("api/modifyPwd", "api/UserController/modifyPwd");
+	// 获取分类或标签列表
+	Route::get("findCategoryOrTagList", "api/CategoryTagController/findCategoryOrTagList");
 
-// 重置密码
-Route::post("api/resetPwd", "api/UserController/resetPwd");
+	// 获取文章列表
+	Route::get("findArticleList", "api/ArticleController/findArticleList");
 
-// 新增文章
-Route::post("api/addArticle", "api/ArticleController/addArticle");
+	// 获取文章详情
+	Route::get("getArticleDetail", "api/ArticleController/getArticleDetail");
 
-// 获取文章列表
-Route::get("api/findArticleList", "api/ArticleController/findArticleList");
+});
 
-// 获取文章详情
-Route::get("api/getArticleDetail", "api/ArticleController/getArticleDetail");
+// 管理端
+Route::group("api/admin", function () {
+	// 新增分类或标签
+	Route::post("addCategoryOrTag", "api/CategoryTagController/addCategoryOrTag");
 
-// 更新文章
-Route::post("api/updateArticle", "api/ArticleController/updateArticle");
+	// 更新分类或标签（删除）
+	Route::post("updateCategoryOrTag", "api/CategoryTagController/updateCategoryOrTag");
 
-// 新增分类或标签
-Route::post("api/addCategoryOrTag", "api/CategoryTagController/addCategoryOrTag");
+	// 获取文章列表
+	Route::get("findArticleListForAdmin", "api/ArticleController/findArticleListForAdmin");
 
-// 更新分类或标签
-Route::post("api/updateCategoryOrTag", "api/CategoryTagController/updateCategoryOrTag");
+	// 更新文章
+	Route::post("updateArticle", "api/ArticleController/updateArticle");
 
-// 获取分类或标签列表
-Route::get("api/findCategoryOrTagList", "api/CategoryTagController/findCategoryOrTagList");
+	// 新增文章
+	Route::post("addArticle", "api/ArticleController/addArticle");
 
+	// 重置密码
+	Route::post("resetPwd", "api/UserController/resetPwd");
 
+	// 获取用户详情
+	Route::get("getDetail", "api/UserController/getDetail");
+
+	// 修改用户名密码
+	Route::post("modifyPwd", "api/UserController/modifyPwd");
+
+});

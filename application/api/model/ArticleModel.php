@@ -34,7 +34,7 @@ class ArticleModel extends Model {
 	}
 
 	/**
-	 * 获取文章列表
+	 * 获取文章列表 客户端
 	 * @param $keyword
 	 * @param int $size
 	 * @param int $page
@@ -43,8 +43,22 @@ class ArticleModel extends Model {
 	 */
 	public static function findAll($keyword, $page = 1, $size = 10) {
 		return self::with(["categorys", "tags"])
-			->where("title", "like", "%$keyword%")
-			->whereOr("content", "like", "%$keyword%")
+			->where('title|content', 'like', "%$keyword%")
+			->where("status", "=", 1)
+			->paginate($size, false, ['page' => $page]);
+	}
+
+
+	/**
+	 *  获取文章列表 管理端
+	 * @param $keyword
+	 * @param int $page
+	 * @param int $size
+	 * @return \think\Paginator
+	 */
+	public static function findAllForAdmin($keyword, $page = 1, $size = 10) {
+		return self::with(["categorys", "tags"])
+			->where('title|content', 'like', "%$keyword%")
 			->paginate($size, false, ['page' => $page]);
 	}
 

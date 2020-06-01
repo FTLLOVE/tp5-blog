@@ -23,8 +23,7 @@ use app\validate\PageValidate;
 use app\validate\StatusValidate;
 use think\Request;
 
-class CategoryTagController
-{
+class CategoryTagController {
 
 	/**
 	 * 新增分类或标签
@@ -32,8 +31,7 @@ class CategoryTagController
 	 * @param Request $request
 	 * @return array
 	 */
-	public function addCategoryOrTag(Request $request)
-	{
+	public function addCategoryOrTag(Request $request) {
 		(new CategoryAndTagValidate())->goCheck();
 
 		$tokenData = CommonUtil::checkAuth();
@@ -69,8 +67,7 @@ class CategoryTagController
 	 * @param Request $request
 	 * @return array
 	 */
-	public function updateCategoryOrTag(Request $request)
-	{
+	public function updateCategoryOrTag(Request $request) {
 		// id验证器
 		(new IdValidate())->goCheck();
 
@@ -103,8 +100,6 @@ class CategoryTagController
 			throw new CustomException(ScopeEnum::TAG_EXIST);
 		}
 
-		//TODO 如果文章中有标签或分类存在的话，需处理
-
 		// 更新
 		CategoryTagModel::updateOne($id, $name, $flag, $status);
 
@@ -118,8 +113,7 @@ class CategoryTagController
 	 * @param Request $request
 	 * @return array
 	 */
-	public function findCategoryOrTagList(Request $request)
-	{
+	public function findCategoryOrTagList(Request $request) {
 		(new FlagValidate())->goCheck();
 
 		(new PageValidate())->goCheck();

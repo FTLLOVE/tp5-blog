@@ -76,6 +76,7 @@ class CategoryTagModel extends Model {
 	public static function findAll($name, $flag, $page = 1, $size = 10) {
 		return self::where("name", "like", "%$name%")
 			->where("flag", $flag)
+			->where("status", 1)
 			->paginate($size, false, ['page' => $page]);
 	}
 }
